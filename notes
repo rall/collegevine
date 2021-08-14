@@ -31,3 +31,8 @@ navigator.geolocation.getCurrentPosition(l => console.log(l))
 leaflet layer providers:
 http://leaflet-extras.github.io/leaflet-providers/preview/index.html
 
+
+
+run server:
+from locations directory
+np serve
