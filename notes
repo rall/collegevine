@@ -1,0 +1,25 @@
+notes
+
+The postgrest container was exiting for me (OOM 137) so I increased the memory allocated to docker.
+
+
+
+docker-compose up
+
+export PGPASSWORD=$POSTGRES_APP_PASSWORD
+psql --host=$DATABASE_HOST --username=$POSTGRES_APP_USER --dbname=$POSTGRES_APP_DB --file=create-table.sql
+curl --header "Content-Type: application/json" --data @locations.json http://$DATABASE_HOST:3000/locations
+
+psql --host=$DATABASE_HOST --username=$POSTGRES_APP_USER --dbname=$POSTGRES_APP_DB --file=add-geography.sql
+psql --host=$DATABASE_HOST --username=$POSTGRES_APP_USER --dbname=$POSTGRES_APP_DB --file=distance_func.sql
+
+
+
+current location api
+
+navigator.geolocation.getCurrentPosition(l => console.log(l))
+
+
+leaflet layer providers:
+http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+
