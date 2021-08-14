@@ -5,3 +5,10 @@
 <app-dashboard>
   <app-map></app-map>
 </app-dashboard>
+
+<ol>
+  <li *ngFor="let location of (location$ | async)">
+    {{ location.name }} ({{ location.distance }} miles away)
+  </li>
+</ol>
+

@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { SchoolLocation } from './school-location';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,7 @@ export class ApiService {
   });
 
   findLocationsByDistance(distanceInMiles: number, latlng: { lat: number, lng: number }) {
-    return this.http.post<Location[]>(`localhost:3000/rpc/distances?distance=lt.${distanceInMiles}&order=distance`,
+    return this.http.post<SchoolLocation[]>(`http://localhost:3000/rpc/distances?distance=lt.${distanceInMiles}&order=distance`,
       latlng,
       {
         headers: this.headers
