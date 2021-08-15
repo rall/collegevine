@@ -1,10 +1,23 @@
-import { Component, Input, AfterViewInit } from '@angular/core';
+import { Component, Input, AfterViewInit, Output } from '@angular/core';
 import * as L from 'leaflet';
-import { Subject } from 'rxjs';
+import { LatLngLiteral, LeafletMouseEvent } from 'leaflet';
+import { from, Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 function coordsToLatLng(coords: GeolocationCoordinates): L.LatLng {
   return L.latLng(coords.latitude, coords.longitude);
+}
+
+function mapClick$(map: L.Map): Observable<LeafletMouseEvent> {
+  return new Observable(observer => {
+    const click$ = map.on('click', (event: LeafletMouseEvent) => {
+      observer.next(event);
+    });
+
+    return () => {
+      click$.remove();
+    };
+  });
 }
 
 @Component({
@@ -17,16 +30,19 @@ export class MapComponent implements AfterViewInit {
 
   constructor() { }
 
-  recenterSubject = new Subject<GeolocationCoordinates>();
+  recenterSubject = new Subject<LatLngLiteral | null>();
   zoomSubject = new Subject<number>();
 
   @Input()
-  set coords(newCoords: GeolocationCoordinates | null) {
-    if (newCoords) {
-      this.recenterSubject.next(newCoords);
+  set center(newLatLng: LatLngLiteral | null) {
+    if (newLatLng) {
+      this.recenterSubject.next(newLatLng);
     }
   }
 
+  @Output()
+  reCenter = new Subject<LatLngLiteral>();
+  
   ngAfterViewInit(): void {
     this.map = L.map('map', {
       center: [ 39.8282, -98.5795 ],
@@ -38,16 +54,18 @@ export class MapComponent implements AfterViewInit {
     });
     tiles.addTo(this.map);
 
-    this.recenterSubject.pipe(
-      map(coordsToLatLng),
-    ).subscribe(latlng => {
-      this.map.setView(latlng);
+    this.recenterSubject.subscribe(latlng => {
+      this.map.setView(latlng as LatLngLiteral);
     });
 
     this.zoomSubject.pipe(
     ).subscribe(zoom => {
       this.map.setZoom(zoom);
     });
+
+    mapClick$(this.map).pipe(
+      map(event => event.latlng as LatLngLiteral)
+    ).subscribe(this.reCenter);
 
   }
 }

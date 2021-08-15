@@ -19,3 +19,13 @@
 .dashboard-card-content {
   text-align: center;
 }
+
+.mat-grid-tile-content {
+  align-items: flex-start !important;
+}
+
+::ng-deep .mat-grid-tile.list .mat-grid-tile-content {
+  justify-content: flex-start !important ;
+  align-items: flex-start !important;
+  overflow: auto;
+}

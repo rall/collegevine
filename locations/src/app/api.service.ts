@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { LatLngLiteral } from 'leaflet';
 import { combineLatest, Subject } from 'rxjs';
-import { map, scan, switchMap } from 'rxjs/operators';
+import { map, scan, switchMap, tap } from 'rxjs/operators';
 import { SchoolLocation } from './school-location';
 
 type Query = { distanceInMiles: number, latlng: LatLngLiteral }
@@ -25,7 +25,10 @@ export class ApiService {
       map(latlng => <Query>{ latlng }),
     ),
   ]).pipe(
-    scan((acc, query) => { return {...acc, ...query } }, {} as Query),
+    scan((acc, query) => {
+      const mergedQuery = { ...query[0], ...query[1] };
+      return {...acc, ...mergedQuery }
+    }, {} as Query),
     switchMap(query => this.findLocationsByDistance(query)),
   );
 

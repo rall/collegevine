@@ -13,6 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { LayoutModule } from '@angular/cdk/layout';
 import { MapComponent } from './map/map.component';
+import { MatSliderModule } from '@angular/material/slider';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -29,7 +31,8 @@ import { MapComponent } from './map/map.component';
     MatIconModule,
     MatButtonModule,
     MatToolbarModule,
-    LayoutModule
+    LayoutModule,
+    MatSliderModule
   ],
   providers: [],
   bootstrap: [AppComponent]

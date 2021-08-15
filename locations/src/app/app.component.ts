@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { MatSliderChange } from '@angular/material/slider';
+import { LatLngLiteral } from 'leaflet';
+import { merge, Observable, Subject } from 'rxjs';
+import { exhaustMap, filter, map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { SchoolLocation } from './school-location';
 @Component({
@@ -10,16 +12,35 @@ import { SchoolLocation } from './school-location';
 })
 export class AppComponent {
   title = 'College Finder';
+  location$: Observable<SchoolLocation[]>;
+  chooseCurrentLocation: Subject<void> = new Subject();
+  chooseSearchRadius: Subject<MatSliderChange> = new Subject();
+  chooseCenter: Subject<LatLngLiteral> = new Subject();
+
+  latLng$ = merge(this.chooseCurrentLocation.pipe(
+    exhaustMap(() => this.currentPosition$),
+    map(position => <LatLngLiteral>{lat: position.coords.latitude, lng: position.coords.longitude})
+  ), this.chooseCenter);
 
   constructor(private apiService: ApiService) {
-    
+    this.location$ = this.apiService.location$;
   }
 
-  location$!: Observable<SchoolLocation[]>;
+  currentPosition$: Observable<GeolocationPosition> = new Observable(observer => {
+    return navigator.geolocation.getCurrentPosition(
+      position => {
+        observer.next(position);
+        observer.complete();
+      }, 
+      error => observer.error(error))
+  });
 
   ngOnInit() {
-    this.location$ = this.apiService.findLocationsByDistance(100, {lat: 41.8839513, lng: -74.2886072}).pipe(
-      tap(console.log)
-    );
+    this.latLng$.subscribe(this.apiService.center);
+
+    this.chooseSearchRadius.pipe(
+      filter(change => !!change.value),
+      map(change => change.value as number),
+    ).subscribe(this.apiService.distanceInMiles);
   }
 }

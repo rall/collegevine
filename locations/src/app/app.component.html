@@ -1,14 +1,25 @@
-<mat-toolbar  color="primary" class="fixed-header">
+<mat-toolbar color="primary" class="fixed-header">
   <h1>College Finder</h1>
+  <span class="spacer"></span>
+  <button mat-icon-button class="favorite-icon" aria-label="Button to select current location" (click)="chooseCurrentLocation.next()">
+    <mat-icon>map</mat-icon>
+  </button>
 </mat-toolbar>
 
 <app-dashboard>
-  <app-map></app-map>
+  <div map>
+    <app-map (reCenter)="chooseCenter.next($event)" [center]="latLng$ | async"></app-map>
+  </div>
+  <div list>
+    <ol>
+      <li *ngFor="let location of (location$ | async)">
+        {{ location.name }} ({{ location.distance | number: '1.0-0' }} miles away)
+      </li>
+    </ol>
+  </div>
+  <div slider>
+    <mat-slider (change)="chooseSearchRadius.next($event)" min="1" max="100" thumbLabel=true step="1" vertical=true autoTicks=true aria-label="slide to pick distance in miles"></mat-slider>
+  </div>
 </app-dashboard>
 
-<ol>
-  <li *ngFor="let location of (location$ | async)">
-    {{ location.name }} ({{ location.distance }} miles away)
-  </li>
-</ol>
 
