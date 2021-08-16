@@ -2,6 +2,8 @@ A sample angular app front end with a postGIS database and a PostgREST api layer
 
 ### To launch the stack
 
+**Docker images are for ARM-64 - tested on Apple M1 silicon only**
+
 You might have to increase docker's memory allocation if the postgrest container exits randomly (OOM 137)
 
 First, create a .env file. 
